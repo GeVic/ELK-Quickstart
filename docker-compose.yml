@@ -1,0 +1,23 @@
+version: '3' # Specifies the version of the Docker Compose file format
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.1 # The Elasticsearch image
+    environment:
+      - 'discovery.type=single-node' # Configures a single-node cluster (not distributed)
+      - 'xpack.security.enabled=false' # Disables X-Pack security
+    ports:
+      - '9200:9200' # Exposes Elasticsearch on port 9200
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.1 # The Logstash image
+    ports:
+      - '5044:5044' # Exposes Logstash on port 5044
+    volumes:
+      - ./logstash-config:/usr/share/logstash/pipeline # Mounts the logstash-config directory to the Logstash pipeline directory in the container
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.1 # The Kibana image
+    ports:
+      - '5601:5601' # Exposes Kibana on port 5601
+    depends_on:
+      - elasticsearch # Ensures Elasticsearch is started before Kibana
